@@ -47,6 +47,7 @@ const SafeDetails: FC = () => {
         balance={balance}
         owners={owners}
         threshold={threshold}
+        reloadData={reloadData}
       />
       <AddOwner safe={safe} reloadData={reloadData} />
       <RemoveOwner safe={safe} reloadData={reloadData} />
@@ -66,13 +67,14 @@ const AddOwner: FC<{
           if (safe !== undefined) {
             const data = new FormData(e.target as any);
             let threshold: any = data.get("threshold") as string;
-            console.log(threshold);
-            if (threshold != null && threshold != "") threshold = +threshold;
+
+            if (threshold != null && threshold != undefined && threshold != "")
+              threshold = +threshold;
             else threshold = undefined;
-            console.log(threshold);
+
             const params: AddOwnerTxParams = {
               ownerAddress: data.get("ownerAddress") as string,
-              threshold: threshold,
+              threshold: threshold || (await safe.getThreshold()),
             };
             const safeTransaction = await safe.createAddOwnerTx(params);
             const txResponse = await safe.executeTransaction(safeTransaction);
@@ -120,11 +122,14 @@ const RemoveOwner: FC<{
           if (safe !== undefined) {
             const data = new FormData(e.target as any);
             let threshold: any = data.get("threshold") as string;
-            if (threshold != null && threshold != "") threshold = +threshold;
+
+            if (threshold != null && threshold != undefined && threshold !== "")
+              threshold = +threshold;
             else threshold = undefined;
+
             const params: RemoveOwnerTxParams = {
               ownerAddress: data.get("ownerAddress") as string,
-              threshold,
+              threshold: threshold || (await safe.getThreshold()),
             };
             const safeTransaction = await safe.createRemoveOwnerTx(params);
             const txResponse = await safe.executeTransaction(safeTransaction);
@@ -164,7 +169,8 @@ const SafeInfo: FC<{
   balance?: string;
   owners?: string[];
   threshold?: number;
-}> = ({ safeAddress, balance, owners, threshold }) => {
+  reloadData: () => void;
+}> = ({ safeAddress, balance, owners, threshold, reloadData }) => {
   return (
     <div className="flex p-6 rounded-md shadow border border-gray-500 flex-col max-w-screen-md w-full">
       <p>Safe Address:</p>
