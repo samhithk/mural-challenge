@@ -1,8 +1,8 @@
-import { FC, useEffect, useRef, useState } from "react";
 import MetaMaskOnboarding from "@metamask/onboarding";
-import { ethers } from "ethers";
-import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { ethers } from "ethers";
+import { FC, useEffect, useRef, useState } from "react";
 
 dayjs.extend(relativeTime);
 
@@ -41,11 +41,11 @@ const Home: FC = () => {
   }, [accounts]);
 
   return (
-    <main className="h-screen w-screen overflow-y-auto flex flex-col items-center p-6 font-mono space-y-6">
+    <div className="w-full h-full overflow-y-auto flex flex-col items-center p-6 space-y-6">
       <OnboardingButton accounts={accounts} setAccounts={setAccounts} />
       {accounts.length > 0 && <WalletCard address={accounts[0]} />}
       {txs && <TxList txs={txs} />}
-    </main>
+    </div>
   );
 };
 
@@ -100,7 +100,6 @@ const WalletCard: FC<{
         <div className="mt-2 flex items-center space-x-2 py-1 px-2 bg-gray-200 rounded-md">
           <div className="p-1 rounded-full bg-green-600"></div>
           <p className="text-xs">{address}</p>
-          <p></p>
         </div>
       </div>
       <WalletBalance
